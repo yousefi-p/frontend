@@ -9,17 +9,26 @@
     "lint": "next lint"
   },
   "dependencies": {
+    "@coreui/icons": "^3.0.1",
+    "@coreui/icons-react": "^2.3.0",
+    "@tailwindcss/vite": "^4.1.11",
+    "animejs": "^4.1.2",
+    "next": "15.4.5",
     "react": "19.1.0",
     "react-dom": "19.1.0",
-    "next": "15.4.5"
+    "react-phone-number-input": "^3.4.12",
+    "tailwindcss": "^4.1.11"
   },
   "devDependencies": {
-    "typescript": "^5",
+    "@eslint/eslintrc": "^3",
+    "@types/animejs": "^3.1.13",
     "@types/node": "^20",
     "@types/react": "^19",
     "@types/react-dom": "^19",
+    "axios": "^1.11.0",
+    "bootstrap": "^5.3.7",
     "eslint": "^9",
     "eslint-config-next": "15.4.5",
-    "@eslint/eslintrc": "^3"
+    "typescript": "^5"
   }
 }
