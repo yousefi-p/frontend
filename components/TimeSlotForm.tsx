@@ -2,25 +2,24 @@
 
 import { useState } from 'react';
 import API from '@/lib/api';
-import DatePicker from 'react-datepicker';
-import { registerLocale, setDefaultLocale } from  "react-datepicker";
-import {faIR} from 'date-fns/locale';
+import DatePicker from 'react-multi-date-picker';
 import 'react-datepicker/dist/react-datepicker.css';
-import moment from 'jalali-moment'
-import JalaliDateInput from './JalaliDateInput';
+import type{Value} from 'react-multi-date-picker'
+import persian from 'react-date-object/calendars/persian'
+import persian_fa from 'react-date-object/locales/persian_fa'
+import moment from 'jalali-moment';
 
 interface TimeSlotFormProps {
   courts: { id: number; name: string }[];
   onTimeSlotCreated: () => void;
 }
 
-registerLocale('fa', faIR);
-setDefaultLocale('fa');
+
 
 export default function TimeSlotForm({ courts, onTimeSlotCreated }: TimeSlotFormProps) {
   const [court, setCourt] = useState<number | ''>('');
-  const [startTime, setStartTime] = useState<Date | null>(null);
-  const [endTime, setEndTime] = useState<Date | null>(null);
+  const [startTime, setStartTime] = useState<Value>(new Date);
+  const [endTime, setEndTime] = useState<Value>(new Date);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -68,26 +67,19 @@ export default function TimeSlotForm({ courts, onTimeSlotCreated }: TimeSlotForm
         <div className="mb-3">
           <label htmlFor="start_time" className="form-label">زمان شروع</label>
           <DatePicker
-            selected={startTime}
-            onChange={(date: Date | null) => setStartTime(date)}
-            showTimeSelect
-            dateFormat="Pp"
-            calendar="persian"
-            locale="fa"
+            onChange={setStartTime}
+            calendar={persian}
+            locale={persian_fa}
+            calendarPosition='bottom-right'
           />
         </div>
         <div className="mb-3">
           <label htmlFor="end_time" className="form-label">زمان پایان</label>
-          <JalaliDateInput onChange={function (gDate: string): void {
-            throw new Error('Function not implemented.');
-          } } />
           <DatePicker
-            selected={endTime}
-            onChange={(date: Date | null) => setEndTime(date)}
-            showTimeSelect
-            dateFormat="Pp"
-            calendar="persian"
-            locale="fa"
+            onChange={setEndTime}
+            calendar={persian}
+            locale={persian_fa}
+            calendarPosition='bottom-right'
           />
         </div>
         <button type="submit" className="btn btn-primary">افزودن</button>

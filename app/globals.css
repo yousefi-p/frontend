@@ -70,7 +70,7 @@ header {
 
 footer {
   border-top: #ffffff 0.8rem solid;
-  position: absolute;
+  position: fixed;
   bottom: 0;
   width: 100%;
   animation: slideUp 0.8s ease-out;
