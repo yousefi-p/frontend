@@ -7,6 +7,7 @@ import { registerLocale, setDefaultLocale } from  "react-datepicker";
 import {faIR} from 'date-fns/locale';
 import 'react-datepicker/dist/react-datepicker.css';
 import moment from 'jalali-moment'
+import JalaliDateInput from './JalaliDateInput';
 
 interface TimeSlotFormProps {
   courts: { id: number; name: string }[];
@@ -77,6 +78,9 @@ export default function TimeSlotForm({ courts, onTimeSlotCreated }: TimeSlotForm
         </div>
         <div className="mb-3">
           <label htmlFor="end_time" className="form-label">زمان پایان</label>
+          <JalaliDateInput onChange={function (gDate: string): void {
+            throw new Error('Function not implemented.');
+          } } />
           <DatePicker
             selected={endTime}
             onChange={(date: Date | null) => setEndTime(date)}
