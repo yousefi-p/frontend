@@ -21,41 +21,41 @@ interface TimeSlot {
     is_available: boolean;
   }
 
-export default function DashboardPage() {
+export default function CoachPage() {
   const { user, loading } = useAuth();
   const router = useRouter();
   const [reservations, setReservations] = useState<Reservation[]>([]);
   const [timeslots, setTimeslots] = useState<TimeSlot[]>([]);
 
   useEffect(() => {
-    if (!loading && !user) {
-      router.push('/login');
-    } else if (user) {
+    if (!loading && !user?.is_staff) {
+      router.push('/');
+    } else if (user?.is_staff) {
       API.get('reservations/').then((res) => {
-        setReservations(res.data);
+        setReservations(res.data.filter((r: Reservation) => r.coach === user.id));
       });
       API.get('timeslots/').then((res) => setTimeslots(res.data));
     }
   }, [user, loading, router]);
 
-  if (loading || !user) {
+  if (loading || !user?.is_staff) {
     return <div>Loading...</div>;
   }
 
   return (
     <div className="container">
-      <h1 className="my-4">داشبورد</h1>
+      <h1 className="my-4">پنل مربی</h1>
       
       <div className="card">
         <div className="card-header">
-          <h2>رزروهای شما</h2>
+          <h2>کلاس‌های شما</h2>
         </div>
         <div className="card-body">
           <table className="table">
             <thead>
               <tr>
                 <th>زمان</th>
-                <th>مربی</th>
+                <th>شاگرد</th>
               </tr>
             </thead>
             <tbody>
@@ -64,7 +64,7 @@ export default function DashboardPage() {
                 return (
                     <tr key={reservation.id}>
                     <td>{timeslot ? moment(timeslot.start_time).locale('fa').format('YYYY/MM/DD HH:mm') : ''}</td>
-                    <td>{reservation.coach || 'ندارد'}</td>
+                    <td>{reservation.user}</td>
                   </tr>
                 )
               })}

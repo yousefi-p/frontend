@@ -4,7 +4,11 @@ import { createContext, useContext, useState, useEffect, ReactNode } from 'react
 import API from '@/lib/api';
 
 interface User {
+  id: number;
   phone_number: string;
+  is_staff: boolean;
+  is_manager: boolean;
+  is_superuser: boolean;
 }
 
 interface AuthContextType {

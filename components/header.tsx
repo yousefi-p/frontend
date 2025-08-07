@@ -29,9 +29,21 @@ export default function Header() {
                                     <span className="nav-link">Loading...</span>
                                 </li>
                             ) : user ? (
-                                <li className="nav-item">
-                                    <UserProfile />
-                                </li>
+                                <>
+                                    {user.is_superuser && (
+                                        <li className="nav-item">
+                                            <a className="nav-link" href="/admin">پنل ادمین</a>
+                                        </li>
+                                    )}
+                                    {user.is_manager && (
+                                        <li className="nav-item">
+                                            <a className="nav-link" href="/manager">پنل مدیریت</a>
+                                        </li>
+                                    )}
+                                    <li className="nav-item">
+                                        <UserProfile />
+                                    </li>
+                                </>
                             ) : (
                                 <li className="nav-item">
                                     <a className="nav-link" href="/login">ورود</a>
