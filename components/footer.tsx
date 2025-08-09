@@ -1,7 +1,7 @@
 export default function Footer() {
     return (
         <footer>
-            <p>&copy; 2024 OM-Club</p>
+            <p className="text-center">&copy; 2024 OM-Club</p>
         </footer>
     );
 }

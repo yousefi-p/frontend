@@ -18,7 +18,7 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="fa">
-      <body>
+      <body className="">
         <AuthProvider>
           <Header />
           {children}

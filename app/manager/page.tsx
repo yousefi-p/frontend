@@ -1,94 +1,75 @@
 'use client';
 
-import { useAuth } from '@/context/AuthContext';
-import { useRouter } from 'next/navigation';
-import { useEffect, useState } from 'react';
+import Link from 'next/link';
+import { useState, useEffect } from 'react'
 import API from '@/lib/api';
-import TimeSlotForm from '@/components/TimeSlotForm';
-import moment from 'jalali-moment';
 
-interface Court {
-  id: number;
-  name: string;
-}
+export default function ManagerDashboard() {
+    const [courtsNumber, setCourtsNumber ] = useState<Number>()
+    const [coachNumber, setCoachNumber ] = useState<Number>()
 
-interface TimeSlot {
-  id: number;
-  court: number;
-  start_time: string;
-  end_time: string;
-  is_available: boolean;
-}
+    useEffect(()=>{
+        API.get('court-count/').then((response)=>{
+            setCourtsNumber(response.data.count)
+        });
 
-export default function ManagerPage() {
-  const { user, loading } = useAuth();
-  const router = useRouter();
-  const [courts, setCourts] = useState<Court[]>([]);
-  const [timeslots, setTimeslots] = useState<TimeSlot[]>([]);
+        API.get('coach-count/').then((response)=>{
+            setCoachNumber(response.data.count)
+        })
+    },[]);
 
-  const fetchTimeslots = () => {
-    API.get('timeslots/').then((res) => setTimeslots(res.data));
-  };
+    return (
+        <div className="container mt-5" dir='rtl'>
+            <h1 className="text-center mb-4">پنل مدیریت</h1>
+            <div className="row">
+                <div className="col-md-4">
+                    <div className="card">
+                        <div className="card-body">
+                            <h5 className="card-title">مدیریت زمین‌ها</h5>
+                            { courtsNumber ? (
+                            <>
+                            <p className="card-text">تعداد کل زمین‌ها: 
+                                <span className='badge text-bg-info'>{courtsNumber.toString()}</span>
+                                </p>
+                            <Link href="/manager/courts" className="btn btn-primary">مشاهده</Link>
+                            </>
+                            ) : (
+                                    <p className="card-text">زمین تعریف نشده است. </p>                                
+                            )
+                        }
+                        </div>
+                    </div>
+                </div>
+                <div className="col-md-4">
+                    <div className="card">
+                        <div className="card-body">
+                            <h5 className="card-title">مدیریت مربیان</h5>
+                            {
+                                coachNumber ? (
+                                    <>
+                                        <p className="card-text">تعداد کل مربیان: 
+                                            <span className='badge text-bg-info'>{coachNumber.toString()}</span>
+                                            </p>
+                                        <Link href="/manager/coaches" className="btn btn-primary">مشاهده</Link>
+                                    </>
+                                ) : (
+                                    <p className="card-text">مربی تعریف نشده است. </p>
+                                )
+                            }
 
-  useEffect(() => {
-    if (!loading && !user?.is_manager) {
-      router.push('/');
-    } else if (user?.is_manager) {
-      API.get('courts/').then((res) => setCourts(res.data));
-      fetchTimeslots();
-    }
-  }, [user, loading, router]);
-
-  if (loading || !user?.is_manager) {
-    return <div>Loading...</div>;
-  }
-
-  return (
-    <div className="container">
-      <h1 className="my-4">پنل مدیریت</h1>
-      
-      <TimeSlotForm courts={courts} onTimeSlotCreated={fetchTimeslots} />
-
-      <div className="card mb-4">
-        <div className="card-header">
-          <h2>زمین‌ها</h2>
+                        </div>
+                    </div>
+                </div>
+                <div className="col-md-4">
+                    <div className="card">
+                        <div className="card-body">
+                            <h5 className="card-title">رزروها</h5>
+                            <p className="card-text">تعداد کل رزروها: 20</p>
+                            <Link href="/manager/reservations" className="btn btn-primary">مشاهده</Link>
+                        </div>
+                    </div>
+                </div>
+            </div>
         </div>
-        <div className="card-body">
-          <ul className="list-group">
-            {courts.map((court) => (
-              <li key={court.id} className="list-group-item">{court.name}</li>
-            ))}
-          </ul>
-        </div>
-      </div>
-
-      <div className="card">
-        <div className="card-header">
-          <h2>سانس‌ها</h2>
-        </div>
-        <div className="card-body">
-          <table className="table">
-            <thead>
-              <tr>
-                <th>زمین</th>
-                <th>زمان شروع</th>
-                <th>زمان پایان</th>
-                <th>وضعیت</th>
-              </tr>
-            </thead>
-            <tbody>
-              {timeslots.map((slot) => (
-                <tr key={slot.id}>
-                  <td>{courts.find(c => c.id === slot.court)?.name}</td>
-                  <td>{moment(slot.start_time).locale('fa').format('YYYY/MM/DD HH:mm')}</td>
-                  <td>{moment(slot.end_time).locale('fa').format('YYYY/MM/DD HH:mm')}</td>
-                  <td>{slot.is_available ? 'موجود' : 'رزرو شده'}</td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
-        </div>
-      </div>
-    </div>
-  );
+    );
 }

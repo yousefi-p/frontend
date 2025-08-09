@@ -40,6 +40,11 @@ export default function Header() {
                                             <a className="nav-link" href="/manager">پنل مدیریت</a>
                                         </li>
                                     )}
+                                    {user.is_staff && (
+                                        <li className="nav-item">
+                                            <a className='nav-link' href="/coach">پنل مربی</a>
+                                        </li>
+                                    )}
                                     <li className="nav-item">
                                         <UserProfile />
                                     </li>

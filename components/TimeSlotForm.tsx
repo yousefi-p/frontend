@@ -1,89 +1,87 @@
-'use client';
+'use client'
 
-import { useState } from 'react';
-import API from '@/lib/api';
-import DatePicker from 'react-multi-date-picker';
-import 'react-datepicker/dist/react-datepicker.css';
-import type{Value} from 'react-multi-date-picker'
+import { useState } from 'react'
+import DatePicker, { DateObject } from 'react-multi-date-picker'
+import API from '@/lib/api'
 import persian from 'react-date-object/calendars/persian'
 import persian_fa from 'react-date-object/locales/persian_fa'
-import moment from 'jalali-moment';
 
-interface TimeSlotFormProps {
-  courts: { id: number; name: string }[];
-  onTimeSlotCreated: () => void;
-}
+export default function CourtAvailabilityForm({ courtId }: { courtId: number }) {
+  const [dates, setDates] = useState<DateObject[]>([])
+  const [startTime, setStartTime] = useState('08:00')
+  const [endTime, setEndTime] = useState('22:00')
+  const [interval, setInterval] = useState(60)
 
-
-
-export default function TimeSlotForm({ courts, onTimeSlotCreated }: TimeSlotFormProps) {
-  const [court, setCourt] = useState<number | ''>('');
-  const [startTime, setStartTime] = useState<Value>(new Date);
-  const [endTime, setEndTime] = useState<Value>(new Date);
-
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
-    if (!court || !startTime || !endTime) {
-      alert('Please fill all fields');
-      return;
+  const submit = async () => {
+    const payload = {
+      dates: dates.map((d) => d.format('YYYY-MM-DD')),
+      start_time: startTime,
+      end_time: endTime,
+      interval: interval,
     }
-    try {
-      await API.post('timeslots/', {
-        court,
-        start_time: moment(startTime).format('YYYY-MM-DD HH:mm:ss'),
-        end_time: moment(endTime).format('YYYY-MM-DD HH:mm:ss'),
-      });
-      onTimeSlotCreated();
-      setCourt('');
-      setStartTime(null);
-      setEndTime(null);
-    } catch (error) {
-      console.error('Failed to create timeslot', error);
-    }
-  };
+    await API.post(`courts/${courtId}/generate-slots/`, payload)
+  }
 
   return (
-    <form onSubmit={handleSubmit} className="card mb-4">
-      <div className="card-header">
-        <h3>افزودن سانس جدید</h3>
+    <div dir="rtl" className="container mt-5">
+      <div className="mb-3">
+        <label className="form-label">انتخاب روزها</label>
+        <DatePicker
+          locale={persian_fa}
+          calendar={persian}
+          value={dates}
+          multiple
+          onChange={setDates}
+          format="YYYY/MM/DD"
+          containerClassName="w-100"
+        />
       </div>
-      <div className="card-body">
-        <div className="mb-3">
-          <label htmlFor="court" className="form-label">زمین</label>
-          <select
-            id="court"
+
+      <div className="row g-3">
+        <div className="col-md-6">
+          <label htmlFor="start-time" className="form-label">
+            زمان شروع
+          </label>
+          <input
+            type="time"
+            id="start-time"
             className="form-control"
-            value={court}
-            onChange={(e) => setCourt(Number(e.target.value))}
-          >
-            <option value="" disabled>انتخاب کنید</option>
-            {courts.map((c) => (
-              <option key={c.id} value={c.id}>
-                {c.name}
-              </option>
-            ))}
-          </select>
-        </div>
-        <div className="mb-3">
-          <label htmlFor="start_time" className="form-label">زمان شروع</label>
-          <DatePicker
-            onChange={setStartTime}
-            calendar={persian}
-            locale={persian_fa}
-            calendarPosition='bottom-right'
+            value={startTime}
+            onChange={(e) => setStartTime(e.target.value)}
           />
         </div>
-        <div className="mb-3">
-          <label htmlFor="end_time" className="form-label">زمان پایان</label>
-          <DatePicker
-            onChange={setEndTime}
-            calendar={persian}
-            locale={persian_fa}
-            calendarPosition='bottom-right'
+        <div className="col-md-6">
+          <label htmlFor="end-time" className="form-label">
+            زمان پایان
+          </label>
+          <input
+            type="time"
+            id="end-time"
+            className="form-control"
+            value={endTime}
+            onChange={(e) => setEndTime(e.target.value)}
           />
         </div>
-        <button type="submit" className="btn btn-primary">افزودن</button>
       </div>
-    </form>
-  );
+
+      <div className="my-3">
+        <label htmlFor="interval" className="form-label">
+          فاصله زمانی (دقیقه)
+        </label>
+        <input
+          type="number"
+          id="interval"
+          className="form-control"
+          value={interval}
+          onChange={(e) => setInterval(parseInt(e.target.value, 10))}
+          step="15"
+          min="15"
+        />
+      </div>
+
+      <button className="btn btn-primary w-100" onClick={submit}>
+        ایجاد سانس‌ها
+      </button>
+    </div>
+  )
 }
