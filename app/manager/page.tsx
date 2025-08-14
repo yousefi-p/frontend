@@ -3,10 +3,11 @@
 import Link from 'next/link';
 import { useState, useEffect } from 'react'
 import API from '@/lib/api';
+import DataBox from '@/components/DataBox';
 
 export default function ManagerDashboard() {
-    const [courtsNumber, setCourtsNumber ] = useState<Number>()
-    const [coachNumber, setCoachNumber ] = useState<Number>()
+    const [courtsNumber, setCourtsNumber ] = useState<number>()
+    const [coachNumber, setCoachNumber ] = useState<number>()
 
     useEffect(()=>{
         API.get('court-count/').then((response)=>{
@@ -22,44 +23,9 @@ export default function ManagerDashboard() {
         <div className="container mt-5" dir='rtl'>
             <h1 className="text-center mb-4">پنل مدیریت</h1>
             <div className="row">
-                <div className="col-md-4">
-                    <div className="card">
-                        <div className="card-body">
-                            <h5 className="card-title">مدیریت زمین‌ها</h5>
-                            { courtsNumber ? (
-                            <>
-                            <p className="card-text">تعداد کل زمین‌ها: 
-                                <span className='badge text-bg-info'>{courtsNumber.toString()}</span>
-                                </p>
-                            <Link href="/manager/courts" className="btn btn-primary">مشاهده</Link>
-                            </>
-                            ) : (
-                                    <p className="card-text">زمین تعریف نشده است. </p>                                
-                            )
-                        }
-                        </div>
-                    </div>
-                </div>
-                <div className="col-md-4">
-                    <div className="card">
-                        <div className="card-body">
-                            <h5 className="card-title">مدیریت مربیان</h5>
-                            {
-                                coachNumber ? (
-                                    <>
-                                        <p className="card-text">تعداد کل مربیان: 
-                                            <span className='badge text-bg-info'>{coachNumber.toString()}</span>
-                                            </p>
-                                        <Link href="/manager/coaches" className="btn btn-primary">مشاهده</Link>
-                                    </>
-                                ) : (
-                                    <p className="card-text">مربی تعریف نشده است. </p>
-                                )
-                            }
+                <DataBox data={courtsNumber} name='courts' faName="زمین"message='زمین تعریف نشده است.'/>
+                <DataBox data={coachNumber} name='coaches' faName="مربی"message='مربی تعریف نشده است.'/>
 
-                        </div>
-                    </div>
-                </div>
                 <div className="col-md-4">
                     <div className="card">
                         <div className="card-body">
@@ -69,6 +35,7 @@ export default function ManagerDashboard() {
                         </div>
                     </div>
                 </div>
+                
             </div>
         </div>
     );
